@@ -1,0 +1,43 @@
+{
+  "sample": true,
+  "updatedAt": "2026-11-21",
+  "source": "DATOS DE EJEMPLO - sustituir por la extraccion real de pokebonk.com",
+  "builds": [
+    {
+      "id": "ejemplo-1",
+      "name": "Ejemplo Atacante Fisico",
+      "pokemon": "Garchomp",
+      "role": "Sweeper",
+      "ability": "Rough Skin",
+      "item": "Life Orb",
+      "nature": "Jolly",
+      "evs": "4 HP / 252 Atk / 252 Spe",
+      "moves": ["Earthquake", "Dragon Claw", "Swords Dance", "Protect"],
+      "author": "demo"
+    },
+    {
+      "id": "ejemplo-2",
+      "name": "Ejemplo Tanque",
+      "pokemon": "Blissey",
+      "role": "Wall",
+      "ability": "Natural Cure",
+      "item": "Leftovers",
+      "nature": "Bold",
+      "evs": "252 HP / 252 Def / 4 SpD",
+      "moves": ["Soft-Boiled", "Seismic Toss", "Toxic", "Stealth Rock"],
+      "author": "demo"
+    },
+    {
+      "id": "ejemplo-3",
+      "name": "Ejemplo Atacante Especial",
+      "pokemon": "Gengar",
+      "role": "Sweeper",
+      "ability": "Cursed Body",
+      "item": "Choice Specs",
+      "nature": "Timid",
+      "evs": "252 SpA / 4 SpD / 252 Spe",
+      "moves": ["Shadow Ball", "Sludge Bomb", "Focus Blast", "Trick"],
+      "author": "demo"
+    }
+  ]
+}
