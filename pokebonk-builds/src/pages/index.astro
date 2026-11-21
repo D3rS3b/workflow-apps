@@ -3,6 +3,30 @@ import "../styles/global.css";
 import data from "../data/builds.json";
 
 const { builds, sample, updatedAt, source } = data;
+
+const TYPE: Record<string, { c: string; es: string }> = {
+  normal: { c: "#A8A77A", es: "Normal" }, fire: { c: "#EE8130", es: "Fuego" },
+  water: { c: "#6390F0", es: "Agua" }, electric: { c: "#F7D02C", es: "Eléctrico" },
+  grass: { c: "#7AC74C", es: "Planta" }, ice: { c: "#96D9D6", es: "Hielo" },
+  fighting: { c: "#C22E28", es: "Lucha" }, poison: { c: "#A33EA1", es: "Veneno" },
+  ground: { c: "#E2BF65", es: "Tierra" }, flying: { c: "#A98FF3", es: "Volador" },
+  psychic: { c: "#F95587", es: "Psíquico" }, bug: { c: "#A6B91A", es: "Bicho" },
+  rock: { c: "#B6A136", es: "Roca" }, ghost: { c: "#735797", es: "Fantasma" },
+  dragon: { c: "#6F35FC", es: "Dragón" }, dark: { c: "#705746", es: "Siniestro" },
+  steel: { c: "#B7B7CE", es: "Acero" }, fairy: { c: "#D685AD", es: "Hada" },
+};
+const STATS = [
+  ["hp", "PS", "#ef4444"], ["atk", "Atq", "#f97316"], ["def", "Def", "#eab308"],
+  ["spa", "AtE", "#3b82f6"], ["spd", "DeE", "#22c55e"], ["spe", "Vel", "#ec4899"],
+] as const;
+
+const usedTypes = [...new Set(builds.flatMap((b) => b.types))];
+const art = (dex: number) =>
+  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${dex}.png`;
+const grad = (types: string[]) => {
+  const a = TYPE[types[0]].c, b = TYPE[types[1] ?? types[0]].c;
+  return `linear-gradient(135deg, ${a} 0%, ${b} 100%)`;
+};
 ---
 
 <!doctype html>
@@ -12,124 +36,164 @@ const { builds, sample, updatedAt, source } = data;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Pokebonk Builds</title>
   </head>
-  <body class="min-h-screen bg-slate-950 text-slate-100">
-    <header class="border-b border-slate-800 bg-slate-900/60">
-      <div class="mx-auto max-w-5xl px-4 py-6">
-        <h1 class="text-3xl font-bold tracking-tight">Pokebonk Builds</h1>
-        <p class="mt-1 text-sm text-slate-400">
-          Actualizado: {updatedAt} · <span id="count">{builds.length}</span> builds
-        </p>
+  <body class="min-h-screen text-white antialiased">
+    <header class="hero">
+      <svg class="hero-ball" viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="8" />
+        <path d="M4 50h30M66 50h30" stroke="currentColor" stroke-width="8" />
+        <circle cx="50" cy="50" r="15" fill="none" stroke="currentColor" stroke-width="8" />
+      </svg>
+      <div class="relative mx-auto max-w-6xl px-4 py-10 sm:py-14">
+        <p class="text-xs font-bold uppercase tracking-[0.3em] text-white/80">Team builder</p>
+        <h1 class="mt-1 text-4xl font-black tracking-tight drop-shadow sm:text-6xl">
+          Pokebonk <span class="text-yellow-300">Builds</span>
+        </h1>
+        <div class="mt-4 flex flex-wrap gap-2 text-sm font-semibold">
+          <span class="pill-hero"><b id="count">{builds.length}</b> builds</span>
+          <span class="pill-hero">Actualizado {updatedAt}</span>
+        </div>
       </div>
     </header>
 
     {sample && (
-      <div class="bg-amber-500/15 text-amber-300 text-sm text-center py-2 px-4">
-        ⚠ Datos de ejemplo: {source}
+      <div class="bg-yellow-300 py-2 px-4 text-center text-sm font-bold text-slate-900">
+        ⚠ Datos de ejemplo — {source}
       </div>
     )}
 
-    <main class="mx-auto max-w-5xl px-4 py-6">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <input
-          id="search"
-          type="search"
-          placeholder="Buscar por Pokémon, movimiento, objeto, rol…"
-          class="w-full sm:max-w-md rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm outline-none focus:border-indigo-400"
-        />
+    <main class="mx-auto max-w-6xl px-4 py-8">
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="🔍  Buscar Pokémon, movimiento, objeto, rol…" class="search" />
         <div class="flex flex-wrap gap-2">
-          <button data-export="json" class="btn">Descargar JSON</button>
-          <button data-export="csv" class="btn">Descargar CSV</button>
-          <button data-export="copy" class="btn">Copiar texto</button>
+          <button data-export="json" class="btn">⬇ JSON</button>
+          <button data-export="csv" class="btn">⬇ CSV</button>
+          <button data-export="copy" class="btn btn-main">📋 Copiar</button>
         </div>
       </div>
 
-      <ul id="list" class="mt-6 grid gap-4 sm:grid-cols-2">
-        {builds.map((b) => (
+      <div class="mt-4 flex flex-wrap gap-2" id="types">
+        <button class="chip active" data-type="" style="--c:#94a3b8">Todos</button>
+        {usedTypes.map((t) => (
+          <button class="chip" data-type={t} style={`--c:${TYPE[t].c}`}>{TYPE[t].es}</button>
+        ))}
+      </div>
+
+      <ul id="list" class="mt-8 grid gap-x-6 gap-y-16 pt-10 sm:grid-cols-2 lg:grid-cols-3">
+        {builds.map((b, i) => (
           <li
-            class="build rounded-xl border border-slate-800 bg-slate-900 p-4"
+            class="build"
+            style={`--bg:${grad(b.types)};--glow:${TYPE[b.types[0]].c};animation-delay:${i * 70}ms`}
             data-id={b.id}
-            data-search={[b.name, b.pokemon, b.role, b.ability, b.item, b.nature, ...b.moves].join(" ").toLowerCase()}
+            data-types={b.types.join(" ")}
+            data-search={[b.name, b.pokemon, b.role, b.ability, b.item, b.nature, ...b.moves.map((m) => m.name)].join(" ").toLowerCase()}
           >
-            <div class="flex items-baseline justify-between gap-2">
-              <h2 class="text-lg font-semibold">{b.pokemon}</h2>
-              <span class="rounded-full bg-indigo-500/20 px-2 py-0.5 text-xs text-indigo-300">{b.role}</span>
+            <img class="art" src={art(b.dex)} alt={b.pokemon} loading="lazy" width="475" height="475" />
+            <div class="body">
+              <div class="head">
+              <div class="flex items-center gap-2">
+                <span class="role">{b.role}</span>
+                <span class="text-xs font-semibold text-white/70">#{String(b.dex).padStart(3, "0")}</span>
+              </div>
+              <h2 class="name">{b.pokemon}</h2>
+              <p class="text-sm text-white/75">{b.name}</p>
+              <div class="mt-2 flex gap-1.5">
+                {b.types.map((t) => (<span class="type-pill" style={`--c:${TYPE[t].c}`}>{TYPE[t].es}</span>))}
+              </div>
+              </div>
+
+              <dl class="info">
+                <div><dt>Habilidad</dt><dd>{b.ability}</dd></div>
+                <div><dt>Objeto</dt><dd>{b.item}</dd></div>
+                <div><dt>Naturaleza</dt><dd>{b.nature}</dd></div>
+              </dl>
+
+              <div class="stats">
+                {STATS.map(([k, label, color]) => (
+                  <div class="stat">
+                    <span>{label}</span>
+                    <div class="bar"><i style={`width:${(b.evs[k] / 252) * 100}%;background:${color}`}></i></div>
+                    <b>{b.evs[k]}</b>
+                  </div>
+                ))}
+              </div>
+
+              <ul class="moves">
+                {b.moves.map((m) => (<li style={`--c:${TYPE[m.type].c}`}>{m.name}</li>))}
+              </ul>
             </div>
-            <p class="text-sm text-slate-400">{b.name}</p>
-            <dl class="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
-              <dt class="text-slate-500">Habilidad</dt><dd>{b.ability}</dd>
-              <dt class="text-slate-500">Objeto</dt><dd>{b.item}</dd>
-              <dt class="text-slate-500">Naturaleza</dt><dd>{b.nature}</dd>
-              <dt class="text-slate-500">EVs</dt><dd>{b.evs}</dd>
-            </dl>
-            <ul class="mt-3 flex flex-wrap gap-1.5">
-              {b.moves.map((m) => (
-                <li class="rounded-md bg-slate-800 px-2 py-1 text-xs">{m}</li>
-              ))}
-            </ul>
           </li>
         ))}
       </ul>
-      <p id="empty" class="mt-10 hidden text-center text-slate-500">Ningún resultado.</p>
+      <p id="empty" class="mt-16 hidden text-center text-xl text-white/60">😢 Ningún resultado</p>
     </main>
 
     <script id="builds-data" type="application/json" set:html={JSON.stringify(builds)} />
 
     <script>
+      type Move = { name: string; type: string };
       type Build = {
-        id: string; name: string; pokemon: string; role: string; ability: string;
-        item: string; nature: string; evs: string; moves: string[]; author?: string;
+        id: string; name: string; pokemon: string; dex: number; types: string[]; role: string;
+        ability: string; item: string; nature: string; evs: Record<string, number>;
+        moves: Move[]; author?: string;
       };
-
       const all: Build[] = JSON.parse(document.getElementById("builds-data")!.textContent!);
       const items = [...document.querySelectorAll<HTMLElement>(".build")];
       const search = document.getElementById("search") as HTMLInputElement;
       const count = document.getElementById("count")!;
       const empty = document.getElementById("empty")!;
+      let type = "";
+
+      const apply = () => {
+        const q = search.value.trim().toLowerCase();
+        for (const el of items) {
+          const okQ = !q || el.dataset.search!.includes(q);
+          const okT = !type || el.dataset.types!.split(" ").includes(type);
+          el.hidden = !(okQ && okT);
+        }
+        const n = items.filter((el) => !el.hidden).length;
+        count.textContent = String(n);
+        empty.classList.toggle("hidden", n > 0);
+      };
+      search.addEventListener("input", apply);
+      document.querySelectorAll<HTMLButtonElement>(".chip").forEach((c) =>
+        c.addEventListener("click", () => {
+          type = c.dataset.type ?? "";
+          document.querySelectorAll(".chip").forEach((x) => x.classList.toggle("active", x === c));
+          apply();
+        })
+      );
 
       const visible = (): Build[] => {
         const ids = new Set(items.filter((el) => !el.hidden).map((el) => el.dataset.id));
         return all.filter((b) => ids.has(b.id));
       };
-
-      search.addEventListener("input", () => {
-        const q = search.value.trim().toLowerCase();
-        for (const el of items) el.hidden = !!q && !el.dataset.search!.includes(q);
-        const n = items.filter((el) => !el.hidden).length;
-        count.textContent = String(n);
-        empty.classList.toggle("hidden", n > 0);
-      });
-
-      const download = (name: string, type: string, text: string) => {
-        const url = URL.createObjectURL(new Blob([text], { type }));
-        const a = Object.assign(document.createElement("a"), { href: url, download: name });
-        a.click();
+      const download = (name: string, mime: string, text: string) => {
+        const url = URL.createObjectURL(new Blob([text], { type: mime }));
+        Object.assign(document.createElement("a"), { href: url, download: name }).click();
         URL.revokeObjectURL(url);
       };
-
-      const csvCell = (v: string) => `"${v.replaceAll('"', '""')}"`;
-
+      const cell = (v: string | number) => `"${String(v).replaceAll('"', '""')}"`;
+      const evStr = (e: Record<string, number>) =>
+        ([["hp","HP"],["atk","Atk"],["def","Def"],["spa","SpA"],["spd","SpD"],["spe","Spe"]] as const)
+          .filter(([k]) => e[k]).map(([k, l]) => `${e[k]} ${l}`).join(" / ");
       const toCsv = (rows: Build[]) =>
-        ["id,name,pokemon,role,ability,item,nature,evs,moves,author"]
-          .concat(rows.map((b) =>
-            [b.id, b.name, b.pokemon, b.role, b.ability, b.item, b.nature, b.evs, b.moves.join(" / "), b.author ?? ""]
-              .map(csvCell).join(",")))
-          .join("\n");
-
-      const toText = (rows: Build[]) =>
-        rows.map((b) =>
-          `${b.pokemon} @ ${b.item}\nAbility: ${b.ability}\nEVs: ${b.evs}\n${b.nature} Nature\n` +
-          b.moves.map((m) => `- ${m}`).join("\n")).join("\n\n");
+        ["id,name,pokemon,types,role,ability,item,nature,evs,moves,author"].concat(rows.map((b) =>
+          [b.id, b.name, b.pokemon, b.types.join("/"), b.role, b.ability, b.item, b.nature,
+           evStr(b.evs), b.moves.map((m) => m.name).join(" / "), b.author ?? ""].map(cell).join(","))).join("\n");
+      // Formato tipo Pokémon Showdown
+      const toText = (rows: Build[]) => rows.map((b) =>
+        `${b.pokemon} @ ${b.item}\nAbility: ${b.ability}\nEVs: ${evStr(b.evs)}\n${b.nature} Nature\n` +
+        b.moves.map((m) => `- ${m.name}`).join("\n")).join("\n\n");
 
       document.querySelectorAll<HTMLButtonElement>("[data-export]").forEach((btn) =>
         btn.addEventListener("click", async () => {
-          const rows = visible();
-          const kind = btn.dataset.export;
+          const rows = visible(), kind = btn.dataset.export;
           if (kind === "json") download("pokebonk-builds.json", "application/json", JSON.stringify(rows, null, 2));
           else if (kind === "csv") download("pokebonk-builds.csv", "text/csv;charset=utf-8", toCsv(rows));
           else {
             await navigator.clipboard.writeText(toText(rows));
             const old = btn.textContent;
-            btn.textContent = "¡Copiado!";
+            btn.textContent = "✔ ¡Copiado!";
             setTimeout(() => (btn.textContent = old), 1500);
           }
         })
@@ -137,11 +201,3 @@ const { builds, sample, updatedAt, source } = data;
     </script>
   </body>
 </html>
-
-<style is:global>
-  @reference "tailwindcss";
-  .btn {
-    @apply rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium
-      hover:bg-indigo-500 hover:border-indigo-400 transition-colors cursor-pointer;
-  }
-</style>

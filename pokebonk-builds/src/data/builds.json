@@ -3,41 +3,23 @@
   "updatedAt": "2026-11-21",
   "source": "DATOS DE EJEMPLO - sustituir por la extraccion real de pokebonk.com",
   "builds": [
-    {
-      "id": "ejemplo-1",
-      "name": "Ejemplo Atacante Fisico",
-      "pokemon": "Garchomp",
-      "role": "Sweeper",
-      "ability": "Rough Skin",
-      "item": "Life Orb",
-      "nature": "Jolly",
-      "evs": "4 HP / 252 Atk / 252 Spe",
-      "moves": ["Earthquake", "Dragon Claw", "Swords Dance", "Protect"],
-      "author": "demo"
-    },
-    {
-      "id": "ejemplo-2",
-      "name": "Ejemplo Tanque",
-      "pokemon": "Blissey",
-      "role": "Wall",
-      "ability": "Natural Cure",
-      "item": "Leftovers",
-      "nature": "Bold",
-      "evs": "252 HP / 252 Def / 4 SpD",
-      "moves": ["Soft-Boiled", "Seismic Toss", "Toxic", "Stealth Rock"],
-      "author": "demo"
-    },
-    {
-      "id": "ejemplo-3",
-      "name": "Ejemplo Atacante Especial",
-      "pokemon": "Gengar",
-      "role": "Sweeper",
-      "ability": "Cursed Body",
-      "item": "Choice Specs",
-      "nature": "Timid",
-      "evs": "252 SpA / 4 SpD / 252 Spe",
-      "moves": ["Shadow Ball", "Sludge Bomb", "Focus Blast", "Trick"],
-      "author": "demo"
-    }
+    { "id": "ejemplo-1", "name": "Ejemplo Atacante Fisico", "pokemon": "Garchomp", "dex": 445, "types": ["dragon", "ground"], "role": "Sweeper", "ability": "Rough Skin", "item": "Life Orb", "nature": "Jolly",
+      "evs": { "hp": 4, "atk": 252, "def": 0, "spa": 0, "spd": 0, "spe": 252 },
+      "moves": [{"name":"Earthquake","type":"ground"},{"name":"Dragon Claw","type":"dragon"},{"name":"Swords Dance","type":"normal"},{"name":"Protect","type":"normal"}], "author": "demo" },
+    { "id": "ejemplo-2", "name": "Ejemplo Tanque", "pokemon": "Blissey", "dex": 242, "types": ["normal"], "role": "Wall", "ability": "Natural Cure", "item": "Leftovers", "nature": "Bold",
+      "evs": { "hp": 252, "atk": 0, "def": 252, "spa": 0, "spd": 4, "spe": 0 },
+      "moves": [{"name":"Soft-Boiled","type":"normal"},{"name":"Seismic Toss","type":"fighting"},{"name":"Toxic","type":"poison"},{"name":"Stealth Rock","type":"rock"}], "author": "demo" },
+    { "id": "ejemplo-3", "name": "Ejemplo Atacante Especial", "pokemon": "Gengar", "dex": 94, "types": ["ghost", "poison"], "role": "Sweeper", "ability": "Cursed Body", "item": "Choice Specs", "nature": "Timid",
+      "evs": { "hp": 0, "atk": 0, "def": 0, "spa": 252, "spd": 4, "spe": 252 },
+      "moves": [{"name":"Shadow Ball","type":"ghost"},{"name":"Sludge Bomb","type":"poison"},{"name":"Focus Blast","type":"fighting"},{"name":"Trick","type":"psychic"}], "author": "demo" },
+    { "id": "ejemplo-4", "name": "Ejemplo Fuego Volador", "pokemon": "Charizard", "dex": 6, "types": ["fire", "flying"], "role": "Sweeper", "ability": "Solar Power", "item": "Heavy-Duty Boots", "nature": "Timid",
+      "evs": { "hp": 0, "atk": 0, "def": 0, "spa": 252, "spd": 4, "spe": 252 },
+      "moves": [{"name":"Flamethrower","type":"fire"},{"name":"Air Slash","type":"flying"},{"name":"Solar Beam","type":"grass"},{"name":"Roost","type":"flying"}], "author": "demo" },
+    { "id": "ejemplo-5", "name": "Ejemplo Ninja", "pokemon": "Greninja", "dex": 658, "types": ["water", "dark"], "role": "Revenge Killer", "ability": "Protean", "item": "Life Orb", "nature": "Naive",
+      "evs": { "hp": 0, "atk": 4, "def": 0, "spa": 252, "spd": 0, "spe": 252 },
+      "moves": [{"name":"Hydro Pump","type":"water"},{"name":"Dark Pulse","type":"dark"},{"name":"Ice Beam","type":"ice"},{"name":"U-turn","type":"bug"}], "author": "demo" },
+    { "id": "ejemplo-6", "name": "Ejemplo Aura", "pokemon": "Lucario", "dex": 448, "types": ["fighting", "steel"], "role": "Setup", "ability": "Inner Focus", "item": "Life Orb", "nature": "Adamant",
+      "evs": { "hp": 0, "atk": 252, "def": 0, "spa": 4, "spd": 0, "spe": 252 },
+      "moves": [{"name":"Close Combat","type":"fighting"},{"name":"Meteor Mash","type":"steel"},{"name":"Extreme Speed","type":"normal"},{"name":"Swords Dance","type":"normal"}], "author": "demo" }
   ]
 }
